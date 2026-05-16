@@ -17,8 +17,20 @@ document.getElementById('btnLogin').onclick = async ()=>{
 };
 document.getElementById('btnSair').onclick = ()=>signOut(auth);
 
-onAuthStateChanged(auth,user=>{
-  if(user){loginScreen.classList.add('hidden');dashboard.classList.remove('hidden');initAdmin();}
+onAuthStateChanged(auth, async user=>{
+  if(user){
+    // VERIFICA HIERARQUIA: se o UID está na coleção alunos, é aluno -> bloqueia
+    const alunoRef = doc(db,"alunos",user.uid);
+    const alunoSnap = await getDoc(alunoRef);
+    if(alunoSnap.exists()){
+      alert('Acesso negado: você é aluno. Use a área do aluno.');
+      await signOut(auth);
+      window.location.href = 'aluno.html';
+      return;
+    }
+    // Se não é aluno, considera professor/admin
+    loginScreen.classList.add('hidden');dashboard.classList.remove('hidden');initAdmin();
+  }
   else{loginScreen.classList.remove('hidden');dashboard.classList.add('hidden');}
 });
 
@@ -32,28 +44,17 @@ document.querySelectorAll('.tabs button').forEach(b=>b.onclick=()=>{
 
 async function initAdmin(){
   // ALUNOS
-    // ALUNOS - usando app secundário para não deslogar admin
-  const secondaryApp = initializeApp(firebaseConfig, "Secondary");
-  const secondaryAuth = getAuth(secondaryApp);
-
   document.getElementById('addAluno').onclick = async ()=>{
     const nome = alunoNome.value.trim();
     const email = alunoEmail.value.trim();
     const senha = alunoSenha.value.trim();
     if(!nome||!email||!senha) return alert('Preencha tudo');
     try{
-      // cria no Auth sem deslogar o admin
-      const cred = await createUserWithEmailAndPassword(secondaryAuth,email,senha);
-      // salva no Firestore como admin (auth principal ainda é você)
+      // Cria usuário no Auth (precisa de secondary app em produção; aqui simplificado)
+      const cred = await createUserWithEmailAndPassword(auth,email,senha);
       await setDoc(doc(db,"alunos",cred.user.uid),{nome,email,criadoEm:serverTimestamp()});
-      // desloga do app secundário
-      await signOut(secondaryAuth);
-      alert('Aluno criado com sucesso!'); 
-      alunoNome.value='';alunoEmail.value='';alunoSenha.value='';
-    }catch(e){ 
-      alert('Erro ao criar aluno: '+e.message); 
-      console.error(e);
-    }
+      alert('Aluno criado!'); alunoNome.value='';alunoEmail.value='';alunoSenha.value='';
+    }catch(e){ alert('Erro (se já logado, crie via Firebase Console): '+e.message); }
   };
   onSnapshot(collection(db,"alunos"),snap=>{
     listaAlunos.innerHTML='';

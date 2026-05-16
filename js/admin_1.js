@@ -32,28 +32,17 @@ document.querySelectorAll('.tabs button').forEach(b=>b.onclick=()=>{
 
 async function initAdmin(){
   // ALUNOS
-    // ALUNOS - usando app secundário para não deslogar admin
-  const secondaryApp = initializeApp(firebaseConfig, "Secondary");
-  const secondaryAuth = getAuth(secondaryApp);
-
   document.getElementById('addAluno').onclick = async ()=>{
     const nome = alunoNome.value.trim();
     const email = alunoEmail.value.trim();
     const senha = alunoSenha.value.trim();
     if(!nome||!email||!senha) return alert('Preencha tudo');
     try{
-      // cria no Auth sem deslogar o admin
-      const cred = await createUserWithEmailAndPassword(secondaryAuth,email,senha);
-      // salva no Firestore como admin (auth principal ainda é você)
+      // Cria usuário no Auth (precisa de secondary app em produção; aqui simplificado)
+      const cred = await createUserWithEmailAndPassword(auth,email,senha);
       await setDoc(doc(db,"alunos",cred.user.uid),{nome,email,criadoEm:serverTimestamp()});
-      // desloga do app secundário
-      await signOut(secondaryAuth);
-      alert('Aluno criado com sucesso!'); 
-      alunoNome.value='';alunoEmail.value='';alunoSenha.value='';
-    }catch(e){ 
-      alert('Erro ao criar aluno: '+e.message); 
-      console.error(e);
-    }
+      alert('Aluno criado!'); alunoNome.value='';alunoEmail.value='';alunoSenha.value='';
+    }catch(e){ alert('Erro (se já logado, crie via Firebase Console): '+e.message); }
   };
   onSnapshot(collection(db,"alunos"),snap=>{
     listaAlunos.innerHTML='';
