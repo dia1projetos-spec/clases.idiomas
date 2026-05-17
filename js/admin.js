@@ -8,8 +8,16 @@ const auth = getAuth(app);
 const db = getFirestore(app);
 const ADMIN_EMAIL = "siqueirahenrique32@gmail.com";
 
-document.getElementById('btnLogin').onclick = ()=> signInWithEmailAndPassword(auth, email.value, senha.value).catch(e=>alert(e.message));
-document.getElementById('btnSair').onclick = ()=> signOut(auth);
+// DECLARA TUDO - era isso que faltava
+const loginScreen = document.getElementById('login-screen');
+const dashboard = document.getElementById('dashboard');
+const email = document.getElementById('email');
+const senha = document.getElementById('senha');
+const btnLogin = document.getElementById('btnLogin');
+const btnSair = document.getElementById('btnSair');
+
+btnLogin.onclick = () => signInWithEmailAndPassword(auth, email.value, senha.value).catch(e=>alert(e.message));
+btnSair.onclick = () => signOut(auth);
 
 onAuthStateChanged(auth, user=>{
   if(!user){ loginScreen.classList.remove('hidden'); dashboard.classList.add('hidden'); return; }
@@ -26,7 +34,14 @@ function init(){
   const secondary = initializeApp(firebaseConfig, "sec");
   const auth2 = getAuth(secondary);
 
-  // ALUNOS
+  const addAluno = document.getElementById('addAluno');
+  const alunoNome = document.getElementById('alunoNome');
+  const alunoEmail = document.getElementById('alunoEmail');
+  const alunoSenha = document.getElementById('alunoSenha');
+  const listaAlunos = document.getElementById('listaAlunos');
+  const aulaAlunos = document.getElementById('aulaAlunos');
+  const provaAlunos = document.getElementById('provaAlunos');
+
   addAluno.onclick = async ()=>{
     try{
       const cred = await createUserWithEmailAndPassword(auth2, alunoEmail.value, alunoSenha.value);
@@ -42,38 +57,14 @@ function init(){
   });
 
   // AULAS
-  salvarAula.onclick = async ()=>{
+  document.getElementById('salvarAula').onclick = async ()=>{
     await addDoc(collection(db,"aulas"),{
-      titulo:aulaTitulo.value,
-      youtube:aulaYoutube.value.replace('watch?v=','embed/'),
-      desc:aulaDesc.value,
+      titulo:document.getElementById('aulaTitulo').value,
+      youtube:document.getElementById('aulaYoutube').value.replace('watch?v=','embed/'),
+      desc:document.getElementById('aulaDesc').value,
       alunos:[...aulaAlunos.querySelectorAll('input:checked')].map(i=>i.value),
       criadoEm:serverTimestamp()
     });
-    alert('Aula criada'); aulaTitulo.value=''; aulaYoutube.value=''; aulaDesc.value='';
+    alert('Aula criada');
   };
-  onSnapshot(collection(db,"aulas"), s=>{ listaAulas.innerHTML=''; s.forEach(d=>{ const a=d.data(); listaAulas.innerHTML+=`<div style="background:#fff;padding:10px;margin:6px 0"><b>${a.titulo}</b><br><iframe width="100%" height="200" src="${a.youtube}" frameborder="0" allowfullscreen></iframe></div>`; }); });
-
-  // PROVAS
-  let qs=[]; window.qs=qs;
-  addQuestao.onclick = ()=>{ qs.push({texto:'',tipo:provaTipo.value,opcoes:[]}); questoes.innerHTML = qs.map((q,i)=>`<div style="background:#fff;padding:8px;margin:4px 0"><input placeholder="Pergunta ${i+1}" style="width:100%" oninput="qs[${i}].texto=this.value"></div>`).join(''); };
-  salvarProva.onclick = async ()=>{
-    await addDoc(collection(db,"provas"),{titulo:provaTitulo.value,questoes:qs,alunos:[...provaAlunos.querySelectorAll('input:checked')].map(i=>i.value),criadoEm:serverTimestamp()});
-    alert('Prova salva'); qs=[]; questoes.innerHTML=''; provaTitulo.value='';
-  };
-
-  // BIBLIOTECA
-  salvarBib.onclick = async ()=>{
-    const file = bibCapa.files[0];
-    if(!file) return alert('Escolha imagem');
-    const fd = new FormData(); fd.append('file',file); fd.append('upload_preset',cloudinaryConfig.uploadPreset);
-    const res = await fetch(`https://api.cloudinary.com/v1_1/${cloudinaryConfig.cloudName}/image/upload`,{method:'POST',body:fd});
-    const data = await res.json();
-    await addDoc(collection(db,"biblioteca"),{titulo:bibTitulo.value,link:bibLink.value||'',capa:data.secure_url,criadoEm:serverTimestamp()});
-    alert('Biblioteca salva');
-  };
-  onSnapshot(collection(db,"biblioteca"), s=>{ gridBib.innerHTML=''; s.forEach(d=>{ const b=d.data(); gridBib.innerHTML+=`<div class="item"><img src="${b.capa}"><p>${b.titulo}</p></div>`; }); });
-
-  // RESPOSTAS
-  onSnapshot(collection(db,"respostas"), s=>{ listaRespostas.innerHTML=''; s.forEach(d=>{ const r=d.data(); listaRespostas.innerHTML+=`<div style="background:#fff;padding:10px;margin:5px 0"><b>${r.alunoNome}</b> - ${r.provaTitulo}</div>`; }); });
 }
