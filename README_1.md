@@ -30,8 +30,3 @@ Estrutura pronta com HTML/CSS/JS separados, cores do Brasil, slider com suas fot
 - Entra com email/senha, vê apenas conteúdo atribuído, envia foto, responde e você vê em Admin > Respostas
 
 Tudo responsivo, verde #009C3B, amarelo #FFDF00, azul #002776.
-
-
-## ✅ Config já inserida
-Firebase já está configurado com proyecto clasesportugues-5cb63.
-Falta apenas Cloudinary: coloque seu cloudName e uploadPreset em js/firebase-config.js
