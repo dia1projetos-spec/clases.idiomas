@@ -6,73 +6,59 @@ import { firebaseConfig, cloudinaryConfig } from "./firebase-config.js";
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
-
 const ADMIN_EMAIL = "siqueirahenrique32@gmail.com";
 
-const loginScreen = document.getElementById('login-screen');
-const dashboard = document.getElementById('dashboard');
+document.getElementById('btnLogin').onclick = ()=> signInWithEmailAndPassword(auth, email.value, senha.value).catch(e=>alert(e.message));
+document.getElementById('btnSair').onclick = ()=> signOut(auth);
 
-document.getElementById('btnLogin').onclick = async ()=>{
-  try{ await signInWithEmailAndPassword(auth, email.value, senha.value); }
-  catch(e){ alert('Login falhou: '+e.message); }
-};
-document.getElementById('btnSair').onclick = ()=>signOut(auth);
-
-onAuthStateChanged(auth, async user=>{
+onAuthStateChanged(auth, user=>{
   if(!user){ loginScreen.classList.remove('hidden'); dashboard.classList.add('hidden'); return; }
-  
-  // BLOQUEIO: só admin entra aqui
-  if(user.email !== ADMIN_EMAIL){
-    alert('Acesso negado. Você é aluno.');
-    await signOut(auth);
-    window.location.href = 'aluno.html';
-    return;
-  }
-  loginScreen.classList.add('hidden'); dashboard.classList.remove('hidden');
-  initAdmin();
+  if(user.email !== ADMIN_EMAIL){ signOut(auth); location.href='aluno.html'; return; }
+  loginScreen.classList.add('hidden'); dashboard.classList.remove('hidden'); init();
 });
 
-function initAdmin(){
-  const secondaryApp = initializeApp(firebaseConfig, "Secondary");
-  const secondaryAuth = getAuth(secondaryApp);
+document.querySelectorAll('.tabs button').forEach(b=> b.onclick = ()=>{
+  document.querySelectorAll('.tabs button, .tab').forEach(x=>x.classList.remove('active'));
+  b.classList.add('active'); document.getElementById('tab-'+b.dataset.tab).classList.add('active');
+});
 
-  // CADASTRO ALUNO - AGORA SALVA DE VERDADE
-  document.getElementById('addAluno').onclick = async ()=>{
-    const nome = document.getElementById('alunoNome').value.trim();
-    const email = document.getElementById('alunoEmail').value.trim();
-    const senha = document.getElementById('alunoSenha').value.trim();
-    if(!nome||!email||!senha) return alert('Preencha tudo');
-    
+function init(){
+  const secondary = initializeApp(firebaseConfig, "sec");
+  const auth2 = getAuth(secondary);
+
+  // ALUNOS
+  addAluno.onclick = async ()=>{
     try{
-      const cred = await createUserWithEmailAndPassword(secondaryAuth, email, senha);
-      // SALVA NO FIRESTORE COM UID
-      await setDoc(doc(db, "alunos", cred.user.uid), {
-        nome, email, criadoEm: serverTimestamp()
-      });
-      await signOut(secondaryAuth);
-      alert('✅ Aluno salvo no Firebase!');
-      document.getElementById('alunoNome').value='';
-      document.getElementById('alunoEmail').value='';
-      document.getElementById('alunoSenha').value='';
-    }catch(e){
-      alert('ERRO: '+e.code+'\n'+e.message);
-      console.error(e);
-    }
+      const cred = await createUserWithEmailAndPassword(auth2, alunoEmail.value, alunoSenha.value);
+      await setDoc(doc(db,"alunos",cred.user.uid),{nome:alunoNome.value,email:alunoEmail.value,criadoEm:serverTimestamp()});
+      await signOut(auth2);
+      alert('Aluno salvo!'); alunoNome.value='';alunoEmail.value='';alunoSenha.value='';
+    }catch(e){ alert('Erro: '+e.message); }
   };
-
-  // LISTA ALUNOS - LÊ DO FIRESTORE
-  onSnapshot(collection(db,"alunos"), snap=>{
-    const lista = document.getElementById('listaAlunos');
-    const aulaAlunos = document.getElementById('aulaAlunos');
-    const provaAlunos = document.getElementById('provaAlunos');
-    lista.innerHTML=''; let html='';
-    snap.forEach(d=>{
-      const a = d.data();
-      lista.innerHTML += `<li>${a.nome} - ${a.email}</li>`;
-      html += `<label><input type="checkbox" value="${d.id}"> ${a.nome}</label><br>`;
-    });
-    aulaAlunos.innerHTML = html; provaAlunos.innerHTML = html;
+  onSnapshot(collection(db,"alunos"), s=>{
+    listaAlunos.innerHTML=''; let h='';
+    s.forEach(d=>{ const a=d.data(); listaAlunos.innerHTML+=`<li>${a.nome}</li>`; h+=`<label><input type="checkbox" value="${d.id}"> ${a.nome}</label><br>`; });
+    aulaAlunos.innerHTML=h; provaAlunos.innerHTML=h;
   });
 
-  // resto das funções (aulas, provas, biblioteca) continua igual...
+  // AULAS
+  salvarAula.onclick = async ()=>{
+    await addDoc(collection(db,"aulas"),{
+      titulo:aulaTitulo.value,
+      youtube:aulaYoutube.value.replace('watch?v=','embed/'),
+      desc:aulaDesc.value,
+      alunos:[...aulaAlunos.querySelectorAll('input:checked')].map(i=>i.value),
+      criadoEm:serverTimestamp()
+    });
+    alert('Aula criada');
+  };
+  onSnapshot(collection(db,"aulas"), s=>{ listaAulas.innerHTML=''; s.forEach(d=>{ const a=d.data(); listaAulas.innerHTML+=`<p><b>${a.titulo}</b></p>`; }); });
+
+  // PROVAS
+  let qs=[]; window.qs=qs;
+  addQuestao.onclick = ()=>{ qs.push({texto:'',tipo:provaTipo.value,opcoes:[]}); questoes.innerHTML = qs.map((q,i)=>`<input placeholder="Pergunta ${i+1}" oninput="qs[${i}].texto=this.value">`).join(''); };
+  salvarProva.onclick = async ()=>{
+    await addDoc(collection(db,"provas"),{titulo:provaTitulo.value,questoes:qs,alunos:[...provaAlunos.querySelectorAll('input:checked')].map(i=>i.value),criadoEm:serverTimestamp()});
+    alert('Prova salva'); qs=[]; questoes.innerHTML='';
+  };
 }
