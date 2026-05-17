@@ -1,15 +1,15 @@
-// Firebase - proyecto clasesportugues-5cb63
+// COLE SUA CONFIGURAÇÃO DO FIREBASE AQUI
 export const firebaseConfig = {
-  apiKey: "AIzaSyCqzMvKi4E1JAVS2XkfbcrPdITTAzOfd8s",
-  authDomain: "clasesportugues-5cb63.firebaseapp.com",
-  projectId: "clasesportugues-5cb63",
-  storageBucket: "clasesportugues-5cb63.firebasestorage.app",
-  messagingSenderId: "976042390703",
-  appId: "1:976042390703:web:496132769b561b4c77505a"
+  apiKey: "SUA_API_KEY",
+  authDomain: "SEU_PROJETO.firebaseapp.com",
+  projectId: "SEU_PROJETO",
+  storageBucket: "SEU_PROJETO.appspot.com",
+  messagingSenderId: "000000000",
+  appId: "1:000000000:web:xxxx"
 };
 
-// Cloudinary - configure depois
+// CLOUDINARY (unsigned upload)
 export const cloudinaryConfig = {
-  cloudName: "SEU_CLOUD_NAME_AQUI",
+  cloudName: "SEU_CLOUD_NAME",
   uploadPreset: "SEU_PRESET_UNSIGNED"
 };
