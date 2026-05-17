@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Aluno - Português Brasil</title>
+<link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="css/admin.css">
+<style>
+.welcome{background:linear-gradient(90deg,var(--verde),var(--azul));color:white;padding:30px;border-radius:0 0 24px 24px;text-align:center}
+.avatar{width:110px;height:110px;border-radius:50%;border:4px solid var(--amarelo);object-fit:cover;background:#ddd;margin:auto;display:block}
+</style>
+</head>
+<body>
+<div id="loginAluno" class="auth">
+  <div class="auth-box">
+    <h2>Entrar 🇧🇷</h2>
+    <input id="emailA" type="email" placeholder="Email">
+    <input id="senhaA" type="password" placeholder="Senha">
+    <button id="btnLoginA">Entrar</button>
+  </div>
+</div>
+
+<div id="painel" class="hidden">
+  <div class="welcome">
+    <img id="fotoPerfil" class="avatar" src="https://via.placeholder.com/110">
+    <input type="file" id="uploadFoto" accept="image/*" style="margin-top:10px">
+    <h2 id="nomeAluno">Olá!</h2>
+    <p>Bem-vindo às suas aulas de português</p>
+    <button id="sairA" style="margin-top:10px;background:var(--amarelo);color:var(--azul);border:none;padding:8px 14px;border-radius:8px">Sair</button>
+  </div>
+
+  <main style="padding:20px;max-width:1000px;margin:auto">
+    <h3>📚 Minhas Aulas</h3>
+    <div id="minhasAulas"></div>
+    <h3 style="margin-top:30px">📝 Provas e Enquetes</h3>
+    <div id="minhasProvas"></div>
+    <h3 style="margin-top:30px">📖 Biblioteca</h3>
+    <div id="bibAluno" class="grid-bib"></div>
+  </main>
+</div>
+
+<script type="module" src="js/aluno.js"></script>
+</body>
+</html>

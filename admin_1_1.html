@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Admin - Português Brasil</title>
+<link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="css/admin.css">
+</head>
+<body>
+<div id="login-screen" class="auth">
+  <div class="auth-box">
+    <h2>Área do Professor 🇧🇷</h2>
+    <input id="email" type="email" placeholder="Email">
+    <input id="senha" type="password" placeholder="Senha">
+    <button id="btnLogin">Entrar</button>
+    <p class="hint">Use a conta criada no Firebase Authentication</p>
+  </div>
+</div>
+
+<div id="dashboard" class="hidden">
+  <header class="topbar">
+    <div class="logo">Admin</div>
+    <button id="btnSair">Sair</button>
+  </header>
+  <nav class="tabs">
+    <button data-tab="alunos" class="active">Alunos</button>
+    <button data-tab="aulas">Aulas</button>
+    <button data-tab="provas">Provas</button>
+    <button data-tab="biblioteca">Biblioteca</button>
+    <button data-tab="respostas">Respostas</button>
+  </nav>
+
+  <main>
+    <section id="tab-alunos" class="tab active">
+      <h3>Cadastrar Aluno</h3>
+      <div class="form-grid">
+        <input id="alunoNome" placeholder="Nome completo">
+        <input id="alunoEmail" type="email" placeholder="Email">
+        <input id="alunoSenha" placeholder="Senha inicial">
+        <button id="addAluno">Cadastrar no Firebase</button>
+      </div>
+      <h4>Alunos cadastrados</h4>
+      <ul id="listaAlunos"></ul>
+    </section>
+
+    <section id="tab-aulas" class="tab">
+      <h3>Nova Aula</h3>
+      <div class="form-grid">
+        <input id="aulaTitulo" placeholder="Título da aula">
+        <input id="aulaYoutube" placeholder="Link YouTube (embed ou watch)">
+        <textarea id="aulaDesc" placeholder="Descrição"></textarea>
+        <label>Atribuir para:</label>
+        <div id="aulaAlunos" class="checklist"></div>
+        <button id="salvarAula">Salvar Aula</button>
+      </div>
+      <h4>Aulas criadas</h4>
+      <div id="listaAulas"></div>
+    </section>
+
+    <section id="tab-provas" class="tab">
+      <h3>Criar Prova / Enquete</h3>
+      <input id="provaTitulo" placeholder="Título">
+      <select id="provaTipo"><option value="multipla">Múltipla escolha</option><option value="dissertativa">Dissertativa</option><option value="enquete">Enquete</option></select>
+      <div id="questoes"></div>
+      <button id="addQuestao">+ Questão</button>
+      <label>Atribuir para:</label>
+      <div id="provaAlunos" class="checklist"></div>
+      <button id="salvarProva">Salvar Prova</button>
+    </section>
+
+    <section id="tab-biblioteca" class="tab">
+      <h3>Biblioteca</h3>
+      <input id="bibTitulo" placeholder="Título do material">
+      <input type="file" id="bibCapa" accept="image/*">
+      <input id="bibLink" placeholder="Link PDF ou material">
+      <button id="salvarBib">Enviar para Cloudinary</button>
+      <div id="gridBib" class="grid-bib"></div>
+    </section>
+
+    <section id="tab-respostas" class="tab">
+      <h3>Respostas dos Alunos</h3>
+      <div id="listaRespostas"></div>
+    </section>
+  </main>
+</div>
+
+<script type="module" src="js/admin.js"></script>
+</body>
+</html>

@@ -1,0 +1,33 @@
+/* Cores Brasil */
+:root{
+  --verde:#009C3B;
+  --amarelo:#FFDF00;
+  --azul:#002776;
+  --branco:#fff;
+  --texto:#1a1a1a;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Poppins',sans-serif;color:var(--texto);background:#f7f7f7}
+.topbar{display:flex;justify-content:space-between;align-items:center;padding:14px 24px;background:var(--verde);color:white;position:sticky;top:0;z-index:10}
+.logo{font-weight:800;font-size:1.1rem;display:flex;gap:8px;align-items:center}
+nav a{color:white;text-decoration:none;margin-left:18px;font-weight:600}
+.btn-admin{background:var(--amarelo);color:var(--azul);padding:8px 14px;border-radius:8px}
+.hero{position:relative;height:86vh;overflow:hidden;display:flex;align-items:center;justify-content:center}
+.slider{position:absolute;inset:0}
+.slide{position:absolute;inset:0;background-size:cover;background-position:center;opacity:0;transition:opacity 1.2s}
+.slide.active{opacity:1}
+.overlay{position:absolute;inset:0;background:linear-gradient(120deg,rgba(0,156,59,.85),rgba(0,39,118,.7))}
+.hero-content{position:relative;color:white;text-align:center;padding:0 20px;max-width:900px}
+.hero-content h1{font-size:clamp(2rem,5vw,3.5rem);font-weight:800;line-height:1.1;text-shadow:0 2px 10px rgba(0,0,0,.3)}
+.hero-content p{margin:18px 0 28px;font-size:1.1rem;opacity:.95}
+.cta{display:flex;gap:14px;justify-content:center;flex-wrap:wrap}
+.btn{padding:14px 24px;border-radius:12px;font-weight:700;text-decoration:none;transition:.2s;display:inline-block}
+.btn.yellow{background:var(--amarelo);color:var(--azul)}
+.btn.green{background:var(--verde);color:white;border:2px solid white}
+.btn:hover{transform:translateY(-2px);box-shadow:0 6px 16px rgba(0,0,0,.2)}
+.features{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:20px;padding:50px 24px;max-width:1100px;margin:auto}
+.card{background:white;padding:24px;border-radius:16px;box-shadow:0 4px 14px rgba(0,0,0,.08);border-top:6px solid var(--verde)}
+.card:nth-child(2){border-color:var(--amarelo)}
+.card:nth-child(3){border-color:var(--azul)}
+footer{text-align:center;padding:30px;background:var(--azul);color:white;margin-top:40px}
+@media(max-width:600px){.topbar{flex-direction:column;gap:8px}.hero{height:78vh}}
