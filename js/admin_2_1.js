@@ -17,8 +17,20 @@ document.getElementById('btnLogin').onclick = async ()=>{
 };
 document.getElementById('btnSair').onclick = ()=>signOut(auth);
 
-onAuthStateChanged(auth,user=>{
-  if(user){loginScreen.classList.add('hidden');dashboard.classList.remove('hidden');initAdmin();}
+onAuthStateChanged(auth, async user=>{
+  if(user){
+    // VERIFICA HIERARQUIA: se o UID está na coleção alunos, é aluno -> bloqueia
+    const alunoRef = doc(db,"alunos",user.uid);
+    const alunoSnap = await getDoc(alunoRef);
+    if(alunoSnap.exists()){
+      alert('Acesso negado: você é aluno. Use a área do aluno.');
+      await signOut(auth);
+      window.location.href = 'aluno.html';
+      return;
+    }
+    // Se não é aluno, considera professor/admin
+    loginScreen.classList.add('hidden');dashboard.classList.remove('hidden');initAdmin();
+  }
   else{loginScreen.classList.remove('hidden');dashboard.classList.add('hidden');}
 });
 
